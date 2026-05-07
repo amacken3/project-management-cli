@@ -3,7 +3,13 @@
     {
       "name": "Aengus",
       "email": "aengus@example.com",
-      "projects": []
+      "projects": [
+        {
+          "title": "Portfolio CLI",
+          "description": "Build a project management tool",
+          "tasks": []
+        }
+      ]
     }
   ],
   "projects": [],
