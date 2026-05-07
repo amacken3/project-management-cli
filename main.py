@@ -1,9 +1,16 @@
 import argparse
 
+from rich.console import Console
+from rich.table import Table
+
 from models.task import Task
 from models.user import User
 from models.project import Project
 from utils.storage import load_users, save_users
+
+
+console = Console()
+
 
 def add_user(args):
     users = load_users()
@@ -11,17 +18,25 @@ def add_user(args):
     users.append(user)
     save_users(users)
 
-    print(f"User added: {args.name}")
+    console.print(f"[green]User added:[/green] {args.name}")
+
 
 def list_users(args):
     users = load_users()
 
     if len(users) == 0:
-        print("No users found.")
+        console.print("[yellow]No users found.[/yellow]")
         return
 
+    table = Table(title="Users")
+    table.add_column("Name")
+    table.add_column("Email")
+
     for user in users:
-        print(f"{user.name} - {user.email}")
+        table.add_row(user.name, user.email)
+
+    console.print(table)
+
 
 def add_project(args):
     users = load_users()
@@ -31,10 +46,11 @@ def add_project(args):
             project = Project(args.title, args.description)
             user.add_project(project)
             save_users(users)
-            print(f"Project added to {user.name}: {args.title}")
+            console.print(f"[green]Project added to {user.name}:[/green] {args.title}")
             return
 
-    print(f"User not found: {args.user}")
+    console.print(f"[red]User not found:[/red] {args.user}")
+
 
 def list_projects(args):
     users = load_users()
@@ -42,15 +58,22 @@ def list_projects(args):
     for user in users:
         if user.name == args.user:
             if len(user.projects) == 0:
-                print(f"No projects found for {user.name}.")
+                console.print(f"[yellow]No projects found for {user.name}.[/yellow]")
                 return
 
+            table = Table(title=f"Projects for {user.name}")
+            table.add_column("Title")
+            table.add_column("Description")
+
             for project in user.projects:
-                print(f"{project.title} - {project.description}")
+                table.add_row(project.title, project.description)
+
+            console.print(table)
             return
 
-    print(f"User not found: {args.user}")
-    
+    console.print(f"[red]User not found:[/red] {args.user}")
+
+
 def add_task(args):
     users = load_users()
 
@@ -60,10 +83,11 @@ def add_task(args):
                 task = Task(args.title, args.description, args.due_date)
                 project.add_task(task)
                 save_users(users)
-                print(f"Task added to {project.title}: {args.title}")
+                console.print(f"[green]Task added to {project.title}:[/green] {args.title}")
                 return
 
-    print(f"Project not found: {args.project}")
+    console.print(f"[red]Project not found:[/red] {args.project}")
+
 
 def list_tasks(args):
     users = load_users()
@@ -72,15 +96,23 @@ def list_tasks(args):
         for project in user.projects:
             if project.title == args.project:
                 if len(project.tasks) == 0:
-                    print(f"No tasks found for {project.title}.")
+                    console.print(f"[yellow]No tasks found for {project.title}.[/yellow]")
                     return
+
+                table = Table(title=f"Tasks for {project.title}")
+                table.add_column("Title")
+                table.add_column("Due Date")
+                table.add_column("Status")
 
                 for task in project.tasks:
                     status = "Complete" if task.completed else "Incomplete"
-                    print(f"{task.title} - {task.due_date} - {status}")
+                    table.add_row(task.title, task.due_date, status)
+
+                console.print(table)
                 return
 
-    print(f"Project not found: {args.project}")
+    console.print(f"[red]Project not found:[/red] {args.project}")
+
 
 def complete_task(args):
     users = load_users()
@@ -92,13 +124,14 @@ def complete_task(args):
                     if task.title == args.task:
                         task.mark_complete()
                         save_users(users)
-                        print(f"Task completed: {task.title}")
+                        console.print(f"[green]Task completed:[/green] {task.title}")
                         return
 
-                print(f"Task not found: {args.task}")
+                console.print(f"[red]Task not found:[/red] {args.task}")
                 return
 
-    print(f"Project not found: {args.project}")
+    console.print(f"[red]Project not found:[/red] {args.project}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Project Management CLI")
