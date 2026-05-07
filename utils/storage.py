@@ -4,12 +4,25 @@ from models.user import User
 
 DATA_FILE = "data/tracker_data.json"
 
+DEFAULT_DATA = {
+    "users": [],
+    "projects": [],
+    "tasks": []
+}
+
 
 def load_data(file_path=DATA_FILE):
-    with open(file_path, "r") as file:
-        data = json.load(file)
+    try:
+        with open(file_path, "r") as file:
+            data = json.load(file)
 
-    return data
+        return data
+
+    except FileNotFoundError:
+        return DEFAULT_DATA.copy()
+
+    except json.JSONDecodeError:
+        return DEFAULT_DATA.copy()
 
 
 def save_data(data, file_path=DATA_FILE):

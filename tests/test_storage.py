@@ -52,3 +52,29 @@ def test_save_and_load_users_with_projects_and_tasks(tmp_path):
     assert loaded_users[0].projects[0].title == "Portfolio CLI"
     assert len(loaded_users[0].projects[0].tasks) == 1
     assert loaded_users[0].projects[0].tasks[0].title == "Finish README"
+
+#Error Handling
+
+def test_load_data_returns_default_data_if_file_missing(tmp_path):
+    missing_file = tmp_path / "missing_data.json"
+
+    data = load_data(missing_file)
+
+    assert data == {
+        "users": [],
+        "projects": [],
+        "tasks": []
+    }
+
+
+def test_load_data_returns_default_data_if_json_is_invalid(tmp_path):
+    broken_file = tmp_path / "broken_data.json"
+    broken_file.write_text("not valid json")
+
+    data = load_data(broken_file)
+
+    assert data == {
+        "users": [],
+        "projects": [],
+        "tasks": []
+    }
