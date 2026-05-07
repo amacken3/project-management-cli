@@ -1,5 +1,9 @@
+from dateutil.parser import parse
+
 class Task:
     def __init__(self, title, description, due_date):
+        parse(due_date)
+        
         self.title = title
         self.description = description
         self.due_date = due_date
