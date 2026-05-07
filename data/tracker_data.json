@@ -1,5 +1,11 @@
 {
-  "users": [],
+  "users": [
+    {
+      "name": "Aengus",
+      "email": "aengus@example.com",
+      "projects": []
+    }
+  ],
   "projects": [],
   "tasks": []
 }
