@@ -7,7 +7,14 @@
         {
           "title": "Portfolio CLI",
           "description": "Build a project management tool",
-          "tasks": []
+          "tasks": [
+            {
+              "title": "Finish README",
+              "description": "Write setup instructions",
+              "due_date": "2026-05-08",
+              "completed": true
+            }
+          ]
         }
       ]
     }

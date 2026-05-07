@@ -1,9 +1,9 @@
 import argparse
 
+from models.task import Task
 from models.user import User
 from models.project import Project
 from utils.storage import load_users, save_users
-
 
 def add_user(args):
     users = load_users()
@@ -50,6 +50,55 @@ def list_projects(args):
             return
 
     print(f"User not found: {args.user}")
+    
+def add_task(args):
+    users = load_users()
+
+    for user in users:
+        for project in user.projects:
+            if project.title == args.project:
+                task = Task(args.title, args.description, args.due_date)
+                project.add_task(task)
+                save_users(users)
+                print(f"Task added to {project.title}: {args.title}")
+                return
+
+    print(f"Project not found: {args.project}")
+
+def list_tasks(args):
+    users = load_users()
+
+    for user in users:
+        for project in user.projects:
+            if project.title == args.project:
+                if len(project.tasks) == 0:
+                    print(f"No tasks found for {project.title}.")
+                    return
+
+                for task in project.tasks:
+                    status = "Complete" if task.completed else "Incomplete"
+                    print(f"{task.title} - {task.due_date} - {status}")
+                return
+
+    print(f"Project not found: {args.project}")
+
+def complete_task(args):
+    users = load_users()
+
+    for user in users:
+        for project in user.projects:
+            if project.title == args.project:
+                for task in project.tasks:
+                    if task.title == args.task:
+                        task.mark_complete()
+                        save_users(users)
+                        print(f"Task completed: {task.title}")
+                        return
+
+                print(f"Task not found: {args.task}")
+                return
+
+    print(f"Project not found: {args.project}")
 
 def main():
     parser = argparse.ArgumentParser(description="Project Management CLI")
@@ -72,6 +121,22 @@ def main():
     list_projects_parser = subparsers.add_parser("list-projects")
     list_projects_parser.add_argument("--user", required=True)
     list_projects_parser.set_defaults(func=list_projects)
+
+    add_task_parser = subparsers.add_parser("add-task")
+    add_task_parser.add_argument("--project", required=True)
+    add_task_parser.add_argument("--title", required=True)
+    add_task_parser.add_argument("--description", required=True)
+    add_task_parser.add_argument("--due-date", required=True)
+    add_task_parser.set_defaults(func=add_task)
+
+    list_tasks_parser = subparsers.add_parser("list-tasks")
+    list_tasks_parser.add_argument("--project", required=True)
+    list_tasks_parser.set_defaults(func=list_tasks)
+
+    complete_task_parser = subparsers.add_parser("complete-task")
+    complete_task_parser.add_argument("--project", required=True)
+    complete_task_parser.add_argument("--task", required=True)
+    complete_task_parser.set_defaults(func=complete_task)
 
     args = parser.parse_args()
 
